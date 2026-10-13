@@ -20,7 +20,7 @@ I used Claude Code (an AI coding assistant) as a tutor for this project. Here's 
 | Noticed the log pattern that led to the startup-race finding | Made the manual `server.properties` edits (the `server-udp-ports` line) |
 | Reviewed these docs | Drafted these docs from my notes and our session |
 
-Why Claude made the `server.properties` edits: it was simpler to change the file in place, using `az container exec` to reach into the running container, than to go through Terraform. A Terraform change would have redeployed (replaced) the container group, and that gives it a new public IP, which is the value the line needs. So the line would have been out of date again straight away. Editing it in place and then restarting the container keeps the same IP.
+Why Claude made the `server.properties` edits: it was simpler to change the file in place, using `az container exec` to reach into the running container, than to go through Terraform. A Terraform change would have redeployed (replaced) the container group, and that gives it a new public IP, which is the value the line needs. So the line would have been out of date again straight away. Editing it in place and then restarting the container usually kept the same IP during my testing, though Microsoft says a restart can change it.
 
 I tried to work things out myself before asking. The core HCL (resources, references, nested blocks) was stuff I could write. The `dynamic` block was new to me, since I hadn't studied it yet. I was given its general shape and filled it in myself. Most of what I needed help with was container- and Minecraft-specific, not Terraform.
 
@@ -124,7 +124,7 @@ This is the part Terraform doesn't do. Behind ACI the server only knows its priv
    az container restart -g rg-mc-bedrock-lab -n aci-mc-bedrock-lab
    ```
 
-You have to redo this whenever the container group gets **replaced**, because a replacement gets a new public IP. In Terraform, changing the name, environment variables, or ports causes a replace. `az container restart`, `stop`, and `start` keep the same IP, so those are fine.
+You have to redo this whenever the container group gets **replaced**, because a replacement gets a new public IP. In Terraform, changing the name, environment variables, or ports causes a replace. Microsoft's docs also say the IP **can change on `restart`, `stop`/`start`, or platform maintenance**, so check the IP after any of those. I initially thought only a replacement changed it, but that's wrong.
 
 This setting sticks because the image doesn't have an environment variable for it. Settings that do have an environment variable get rewritten from the env vars every time the container starts, so editing those in the file doesn't last; change them in `main.tf` instead.
 

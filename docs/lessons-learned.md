@@ -18,7 +18,7 @@ Short notes on the Terraform and Azure things this lab taught me.
 ## Azure
 
 - **ACI port limits.** At most 5 ports per IP, and the same port number can't be used for both TCP and UDP.
-- **ACI public IPs aren't static.** Restart, stop, and start keep the IP. A replacement gets a new one. Anything that depends on the IP has to be updated.
+- **ACI public IPs aren't static.** A replacement always gets a new one, and Microsoft says restart, stop/start, and platform maintenance can change it too. Anything that depends on the IP has to be updated.
 - **ACI is behind NAT.** The app inside only sees a private IP, which matters for anything that tells clients what address to use.
 - **Storage account names** are global, lowercase, no hyphens, and some values are case-sensitive.
 - **ACI bills while running** (about $0.12/hr for 2 vCPU / 4 GB), even when nobody is using it. `az container stop` stops compute billing; storage keeps billing.

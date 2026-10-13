@@ -76,7 +76,7 @@ The fix I added is a `liveness_probe` on the container. It runs:
 sh -c "grep -qE ':4ABC [0-9A-F]+:0000 0A' /proc/net/tcp /proc/net/tcp6"
 ```
 
-`/proc/net/tcp` and `/proc/net/tcp6` list the container's sockets with ports in hex. 19132 is `4ABC` in hex, and state `0A` means LISTEN. If no socket is listening on 19132, the grep fails, and after 3 failures (checked every 30 seconds, starting 120 seconds after start because the server takes a while to boot) ACI restarts the container. Since restart policy is `Always`, the bad boot gets replaced with a new boot automatically, and a restart keeps the same IP.
+`/proc/net/tcp` and `/proc/net/tcp6` list the container's sockets with ports in hex. 19132 is `4ABC` in hex, and state `0A` means LISTEN. If no socket is listening on 19132, the grep fails, and after 3 failures (checked every 30 seconds, starting 120 seconds after start because the server takes a while to boot) ACI restarts the container. Since restart policy is `Always`, the bad boot gets replaced with a new boot automatically, and in my testing that restart kept the same IP (Microsoft says it isn't guaranteed).
 
 ## Settings that don't stick
 
